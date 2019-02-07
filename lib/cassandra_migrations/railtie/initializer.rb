@@ -10,21 +10,18 @@
 # More explanations in: http://www.modrails.com/documentation/Users%20guide%20Apache.html#spawning_methods_explained
 
 module CassandraMigrations
+  Cassandra.start!
 
-  unless Rails.env.test?
-    Cassandra.start!
-
-    if defined?(Spring)
-      Spring.after_fork do
-        Cassandra.restart
-      end
+  if defined?(Spring)
+    Spring.after_fork do
+      Cassandra.restart
     end
+  end
 
-    if defined?(PhusionPassenger)
-      PhusionPassenger.on_event(:starting_worker_process) do |forked|
-        if forked
-          Cassandra.restart
-        end
+  if defined?(PhusionPassenger)
+    PhusionPassenger.on_event(:starting_worker_process) do |forked|
+      if forked
+        Cassandra.restart
       end
     end
   end
