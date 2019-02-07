@@ -8,22 +8,3 @@
 # (production tests have shown that the client is nil when forked)
 
 # More explanations in: http://www.modrails.com/documentation/Users%20guide%20Apache.html#spawning_methods_explained
-
-module CassandraMigrations
-
-  Cassandra.start!
-
-  if defined?(Spring)
-    Spring.after_fork do
-      Cassandra.restart
-    end
-  end
-
-  if defined?(PhusionPassenger)
-    PhusionPassenger.on_event(:starting_worker_process) do |forked|
-      if forked
-        Cassandra.restart
-      end
-    end
-  end
-end
